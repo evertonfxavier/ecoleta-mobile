@@ -15,6 +15,7 @@ import { SvgUri } from "react-native-svg";
 import { ScrollView } from "react-native-gesture-handler";
 import * as Location from "expo-location";
 import api from "../../services/api";
+import { useRoute } from "@react-navigation/native";
 
 interface ItemProps {
   id: number;
@@ -30,6 +31,11 @@ interface Point {
   longitude: number;
 }
 
+interface Params {
+  uf: string;
+  city: string;
+}
+
 const Points = () => {
   const [items, setItems] = useState<ItemProps[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
@@ -40,6 +46,9 @@ const Points = () => {
   ]);
 
   const navigation = useNavigation();
+  const route = useRoute();
+
+  const routeParams = route.params as Params;
 
   function handleSelectItem(id: number) {
     const alreadySelected = selectedItems.findIndex((item) => item === id);
@@ -95,15 +104,15 @@ const Points = () => {
     api
       .get("points", {
         params: {
-          city: "João Pessoa",
-          uf: "PB",
-          items: [1, 2],
+          city: routeParams.city,
+          uf: routeParams.uf,
+          items: selectedItems,
         },
       })
       .then((response) => {
         setPoints(response.data);
       });
-  }, []);
+  }, [selectedItems]);
 
   return (
     <>
