@@ -41,10 +41,6 @@ const Points = () => {
 
   const navigation = useNavigation();
 
-  function handleNavigateToDetail(id: number) {
-    navigation.navigate("Detail", { point_id: id });
-  }
-
   function handleSelectItem(id: number) {
     const alreadySelected = selectedItems.findIndex((item) => item === id);
 
@@ -56,6 +52,10 @@ const Points = () => {
       //logica pra selecionar mais de 1;
       setSelectedItems([...selectedItems, id]);
     }
+  }
+
+  function handleNavigateToDetail(id: number) {
+    navigation.navigate("Detail", { point_id: id });
   }
 
   useEffect(() => {

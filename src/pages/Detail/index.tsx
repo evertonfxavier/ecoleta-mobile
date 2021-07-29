@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, TouchableOpacity, Text, Image } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  Image,
+  ActivityIndicator,
+  Linking,
+} from "react-native";
 import { Feather as Icon, FontAwesome } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/core";
 import { RectButton } from "react-native-gesture-handler";
 import Constants from "expo-constants";
+
+import * as MailComposer from "expo-mail-composer";
 
 import api from "../../services/api";
 
@@ -31,6 +41,7 @@ const Detail = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
+  //estou afirmando pto typescript que  route.params tem o formato de Params
   const routeParams = route.params as Params;
 
   useEffect(() => {
@@ -41,16 +52,24 @@ const Detail = () => {
     });
   }, []);
 
+  function handleComposeMail() {
+    MailComposer.composeAsync({
+      subject: "Assunto do e-mail: Interesse na coleta de resíduos",
+      recipients: [data.point.email, "aqui é o email do ponto"],
+    });
+  }
+
+  function handleWhatsapp() {
+    Linking.openURL(
+      `whatsapp://send?phone${data.point.whatsapp}&text=Tenhoh interesse na coleta de resíduos`
+    );
+  }
+
+  //se nao existir, vai ficar na tela de loading até que seja carregado
   if (!data.point) {
     return (
-      <View
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          height: 100,
-        }}
-      >
-        <Text>Loading...</Text>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#666" />
       </View>
     );
   }
@@ -84,11 +103,11 @@ const Detail = () => {
       </View>
 
       <View style={styles.footer}>
-        <RectButton style={styles.button} onPress={() => ""}>
+        <RectButton style={styles.button} onPress={handleWhatsapp}>
           <FontAwesome name="whatsapp" size={20} color="#fff" />
           <Text style={styles.buttonText}>Whatsapp</Text>
         </RectButton>
-        <RectButton style={styles.button} onPress={() => ""}>
+        <RectButton style={styles.button} onPress={handleComposeMail}>
           <Icon name="mail" size={20} color="#fff" />
           <Text style={styles.buttonText}>Email</Text>
         </RectButton>
